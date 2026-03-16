@@ -23,6 +23,13 @@ class GameBoard{
         return this.#board[i][j];
     }
 
+    getSize(){
+        return this.#size;
+    }
+    checkHit(i,j){
+        return this.#hits[i][j] === 1;
+    }
+
     placeShip(row,col,length,axis){
         const ship = new Ship(length);
         if (this.invalidPlacement(row,col,length,axis)){
