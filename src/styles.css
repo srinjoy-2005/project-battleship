@@ -1,36 +1,107 @@
 body{
     padding:2rem;
     display: flex;
+    gap:2rem;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
+    /* align-items: center; */
+    justify-content: space-between;
+    min-height: 90vh;
     font-family: Arial, sans-serif;
     background-color: aliceblue;
 }
+
+/* 1. The Wrapper (This handles the centering) */
+.heading-container {
+  display: flex;
+  justify-content: center; /* Horizontal center */
+  align-items: center;     /* Vertical center */
+  height: 200px;           /* Give it some breathing room */
+  background: #050a10;     /* Deep navy/black background */
+  overflow: hidden;
+}
+
+/* 2. The Heading Style */
+.battleship-heading {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-weight: 900;
+  font-size: clamp(3rem, 10vw, 6rem); /* Responsive size */
+  text-transform: uppercase;
+  letter-spacing: 0em;
+  margin: 0;
+  padding: 0;
+  text-align: center; /* Extra insurance for centering */
+  
+  /* Modern High-Contrast Gradient */
+  background: linear-gradient(
+    to bottom, 
+    #d23703 20%, 
+    #f78d02 50%, 
+    #0c0a0a 80%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* Subtle "Sonar" Glow */
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
+  
+  /* The "Scanning" Animation */
+  background-size: 100% 200%;
+  animation: scan 3s ease-in-out infinite alternate;
+}
+
+@keyframes scan {
+  from { background-position: 0% 0%; }
+  to { background-position: 0% 100%; }
+}
+
+header::after {
+  content: '';
+  display: block;
+  width: 20%;
+  height: 3%;
+  background: #ff3300; 
+  margin: 10px auto;
+  box-shadow: 0 0 15px #ff3300;
+}
+
 
 .waters{
     padding: 1em 2em;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    gap: 3rem;
 }
 
-.board{
+#human-board, #computer-board{
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
-    gap: 2px;
 }
 
 .cell{
-    width: 10px;
-    height: 10px;
-    background-color: lightblue;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(2, 118, 190, 0.49);
     border: 1px solid #333;
     /* display: flex;
     align-items: center;
     justify-content: center; */
     cursor:crosshair;
+}
+
+.ship{
+    background-color: rgba(2, 118, 190, 0.9);
+}
+
+.hit{
+    background-color: blueviolet;
+}
+
+.ship.hit{
+    background-color: rgb(238, 91, 91);
+}
+
+.ship.sunk{
+    background-color: rgba(255, 0, 0, 0.9);
 }

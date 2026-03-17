@@ -42,6 +42,26 @@ class GameLogic{
     getCurrentPlayer() {
         return this.currentPlayer;
     }
+
+    playRandom(){
+        //only for computer player
+        if (this.currentPlayer !== 'computer') {
+            throw new Error("playRandom can only be called for computer player");
+        }
+        let success = false;
+        while (!success) {
+            const row = Math.floor(Math.random() * 10);
+            const col = Math.floor(Math.random() * 10);
+            try {
+                this.human.playerBoard.receiveAttack(row, col);
+                console.log(`Computer attacked (${row}, ${col})`);
+                success = true; // attack succeeded
+            } catch (err) {
+                console.log(err.message);
+                // already attacked → retry
+            }
+        }
+    }
     
     playRound(row, column) {
         try {
@@ -49,11 +69,11 @@ class GameLogic{
                 this.computer.playerBoard.receiveAttack(row, column);
                 console.log(`Human attacked (${row}, ${column})`);
             } else {
-                this.human.playerBoard.receiveAttack(row, column);
+                this.playRandom();
                 console.log(`Computer attacked (${row}, ${column})`);
             }
         } catch (err) {
-            return err.message;
+            throw err;
         }
 
         if (this.human.playerBoard.allSunk()) {
