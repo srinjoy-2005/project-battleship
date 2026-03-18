@@ -6,22 +6,28 @@ import { Player } from "./player.js";
 //Done: TODO: display message if some ship is sunk
 
 class GameLogic{
-    #setupShips(player) {
-        // player.playerBoard.placeShip(0,0,5,'x');
-        // player.playerBoard.placeShip(2,0,4,'x');
-        // player.playerBoard.placeShip(4,0,3,'x');
-        player.playerBoard.placeShip(6,0,3,'x');
-        player.playerBoard.placeShip(8,0,2,'x');
-    }
-
     #switchPlayer() {
         this.currentPlayer =this.currentPlayer === 'human' ? 'computer' : 'human';
     }
 
+
+    #setupShips(player) {
+        if (player.type === 'computer') {
+            player.randomlyPlaceFleet();
+        } else {
+            // For human, we can implement a simple random placement for now
+            // In a full implementation, you'd want to allow the user to choose placements
+            player.randomlyPlaceFleet();
+        }
+    }
     constructor(){
         this.human = null;
         this.computer = null;
         this.currentPlayer = 'human';
+        this.aiMemory = {
+            hits: [],       // successful hits
+            targets: []     // next cells to try
+        };
     }
 
     createGame() {
@@ -32,6 +38,8 @@ class GameLogic{
         this.#setupShips(this.human);
         this.#setupShips(this.computer);
     }
+
+
 
     getPlayers() {
         return {
@@ -65,6 +73,64 @@ class GameLogic{
             }
         }
     }
+
+    #getNeighbors(row, col) {
+        const directions = [
+            [1, 0], [-1, 0], [0, 1], [0, -1]
+        ];
+
+        return directions
+            .map(([dr, dc]) => [row + dr, col + dc])
+            .filter(([r, c]) => r >= 0 && r < 10 && c >= 0 && c < 10);
+    }
+
+    advancedPlayRandom() {
+        if (this.currentPlayer !== 'computer') {
+            throw new Error("advanced playRandom can only be called for computer player");
+        }
+
+        let row, col;
+
+        // 🎯 TARGET MODE
+        if (this.aiMemory.targets.length > 0) {
+            [row, col] = this.aiMemory.targets.shift();
+        } else {
+            // 🔍 HUNT MODE (random)
+            do {
+                row = Math.floor(Math.random() * 10);
+                col = Math.floor(Math.random() * 10);
+            } while (this.human.playerBoard.checkHit(row, col));
+        }
+
+        let result;
+        try {
+            result = this.human.playerBoard.receiveAttack(row, col);
+            console.log(`Computer attacked (${row}, ${col})`);
+        } catch {
+            return this.advancedPlayRandom(); // retry if invalid
+        }
+
+        // 🎯 If HIT → add neighbors
+        if (result === 'hit') {
+            this.aiMemory.hits.push([row, col]);
+
+            const neighbors = this.#getNeighbors(row, col);
+
+            neighbors.forEach(([r, c]) => {
+                if (!this.human.playerBoard.checkHit(r, c)) {
+                    this.aiMemory.targets.push([r, c]);
+                }
+            });
+        }
+
+        // 💀 If ship sunk → reset targeting
+        if (result === 'hit-sunk') {
+            this.aiMemory.hits = [];
+            this.aiMemory.targets = [];
+        }
+
+        return result;
+    }
     
     playRound(row, column) {
         let result='';
@@ -73,7 +139,7 @@ class GameLogic{
                 result  = this.computer.playerBoard.receiveAttack(row, column);
                 console.log(`Human attacked (${row}, ${column})`);
             } else {
-                result = this.playRandom();
+                result = this.advancedPlayRandom();
             }
         } catch (err) {
             throw err;
