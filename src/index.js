@@ -8,6 +8,7 @@ const {human, computer} = gameLogic.getPlayers();
 
 
 const render = new Render(gameLogic);
+render.renderButtons();
 render.renderBoard(human);
 render.renderBoard(computer);
 

@@ -3,12 +3,13 @@
 import { Player } from "./player.js";
 
 //Done: TODO: whole thing should be a class, need to have access to gameboard for displaying ui
+//Done: TODO: display message if some ship is sunk
 
 class GameLogic{
     #setupShips(player) {
-        player.playerBoard.placeShip(0,0,5,'x');
-        player.playerBoard.placeShip(2,0,4,'x');
-        player.playerBoard.placeShip(4,0,3,'x');
+        // player.playerBoard.placeShip(0,0,5,'x');
+        // player.playerBoard.placeShip(2,0,4,'x');
+        // player.playerBoard.placeShip(4,0,3,'x');
         player.playerBoard.placeShip(6,0,3,'x');
         player.playerBoard.placeShip(8,0,2,'x');
     }
@@ -53,24 +54,26 @@ class GameLogic{
             const row = Math.floor(Math.random() * 10);
             const col = Math.floor(Math.random() * 10);
             try {
-                this.human.playerBoard.receiveAttack(row, col);
+                const result = this.human.playerBoard.receiveAttack(row, col);
                 console.log(`Computer attacked (${row}, ${col})`);
                 success = true; // attack succeeded
+                return result;
             } catch (err) {
                 console.log(err.message);
+                // return err.message;
                 // already attacked → retry
             }
         }
     }
     
     playRound(row, column) {
+        let result='';
         try {
             if (this.currentPlayer === 'human') {
-                this.computer.playerBoard.receiveAttack(row, column);
+                result  = this.computer.playerBoard.receiveAttack(row, column);
                 console.log(`Human attacked (${row}, ${column})`);
             } else {
-                this.playRandom();
-                console.log(`Computer attacked (${row}, ${column})`);
+                result = this.playRandom();
             }
         } catch (err) {
             throw err;
@@ -84,8 +87,8 @@ class GameLogic{
             return 'human';
         }
 
-        this.#switchPlayer();
-        return null;
+        if (result==='miss') this.#switchPlayer();
+        return result;
     }
 }
 

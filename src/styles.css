@@ -54,11 +54,11 @@ body{
   to { background-position: 0% 100%; }
 }
 
-header::after {
+.battleship-heading::after {
   content: '';
   display: block;
   width: 20%;
-  height: 3%;
+  height: 4px;
   background: #ff3300; 
   margin: 10px auto;
   box-shadow: 0 0 15px #ff3300;
@@ -84,24 +84,41 @@ header::after {
     height: 2.5rem;
     background-color: rgba(2, 118, 190, 0.49);
     border: 1px solid #333;
-    /* display: flex;
+    display: flex;
     align-items: center;
-    justify-content: center; */
+    justify-content: center;
     cursor:crosshair;
+}
+
+.cell:hover{
+    outline: 5px solid rgba(255, 255, 255, 0.8);
 }
 
 .ship{
     background-color: rgba(2, 118, 190, 0.9);
 }
 
-.hit{
-    background-color: blueviolet;
+.hit:not(.ship)::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: #9b0505;
+  border-radius: 50%;
 }
 
+
 .ship.hit{
-    background-color: rgb(238, 91, 91);
+    background-image: url("./on fire smoking GIF by JoyPixels.gif");
+    background-size: cover;
 }
 
 .ship.sunk{
     background-color: rgba(255, 0, 0, 0.9);
+}
+
+#status{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 3rem;
+    display:flex;
+    justify-content: center;
 }

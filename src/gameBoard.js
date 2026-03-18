@@ -73,10 +73,13 @@ class GameBoard{
         const cell = this.#board[row][col];
         if (cell instanceof Ship){
             cell.hit();
-            return true;
+            if (cell.isSunk()){
+                return 'hit-sunk';
+            }
+            return 'hit';
         }
 
-        return false;
+        return 'miss';
     }
 
     allSunk(){
