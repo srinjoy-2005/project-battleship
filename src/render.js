@@ -14,17 +14,21 @@ class Render {
         buttonArea.innerHTML = ""; 
         const restartBtn = document.createElement("button");
         restartBtn.textContent = "Restart Game";
+        restartBtn.classList.add("restart-button");
         restartBtn.addEventListener("click", () => {
-            this.#gameLogic.createGame();
-            const {human, computer} = this.#gameLogic.getPlayers();
-            this.renderBoard(human);
-            this.renderBoard(computer);
-            this.displayStatus('Make a Move!');
-            this.#gameOver = false;
+            this.#newGame();
         });
         buttonArea.appendChild(restartBtn);
     }
 
+    #newGame() {
+        this.#gameLogic.createGame();
+        const {human, computer} = this.#gameLogic.getPlayers();
+        this.renderBoard(human);
+        this.renderBoard(computer);
+        this.displayStatus('Make a Move!');
+        this.#gameOver = false;
+    }
 
     renderBoard(player) {
         const board = player.playerBoard;
@@ -32,9 +36,7 @@ class Render {
         const size  = board.getSize();
         // const size  = 10;
         const boardArea = document.getElementById(`${player.type}-board`);
-        boardArea.innerHTML = ""; 
-        console.log(`${player.type}-board`,boardArea);
-        
+        boardArea.innerHTML = ""; // Clear previous board        
         for(let i=0;i<size;i++){
             for(let j=0;j<size;j++){
                 this.createCell(player, boardArea, i,j);
@@ -72,8 +74,12 @@ class Render {
                         this.displayStatus("You sank a ship! You get another turn.");
                     } else if (result === 'human') {
                         // human won
-                        this.displayStatus("Victory! You sank the fleet!");
+                        this.displayStatus("Victory! You sank opponent's fleet!");
                         this.#gameOver = true;
+                        async ()=>{
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+
+                        }
                         return;
                     }
 
@@ -85,8 +91,7 @@ class Render {
                         // Computer will keep playing while it hits (and stop when it misses)
                         let compResult;
                         do {
-                            compResult = this.#gameLogic.playRound(); // no args -> computer branch inside playRound
-                            // re-render human board to show computer hits/misses
+                            compResult = this.#gameLogic.playRound();
                             this.renderBoard(this.#gameLogic.getPlayers().human);
 
                             if (compResult === 'hit') {
@@ -117,7 +122,7 @@ class Render {
             });
         }
 
-        // --- 2. Styling Logic ---
+        // Styling
         const value = board.getValue(i, j);
         const isHit = board.checkHit(i, j);
 
