@@ -18,7 +18,20 @@ class Render {
         restartBtn.addEventListener("click", () => {
             this.#newGame();
         });
+
+        // Dark Mode Toggle
+        const themeBtn = document.createElement("button");
+        themeBtn.textContent = "🌙";
+        themeBtn.classList.add("restart-button"); // Reusing your nice button styling
+        themeBtn.style.background = "linear-gradient(135deg, #333, #000)"; // Unique color for theme
+        
+        themeBtn.addEventListener("click", () => {
+            const isDark = document.body.classList.toggle("dark-mode");
+            themeBtn.textContent = isDark ? "☀️ " : "🌙";
+        });
         buttonArea.appendChild(restartBtn);
+        buttonArea.appendChild(themeBtn);
+
     }
 
     #newGame() {
@@ -28,6 +41,24 @@ class Render {
         this.renderBoard(computer);
         this.displayStatus('Make a Move!');
         this.#gameOver = false;
+    }
+
+    #triggerShake(boardId) {
+        const board = document.getElementById(boardId);
+        
+        // Remove the class if it's already there from a previous turn
+        board.classList.remove("shake-active");
+        
+        // Trigger a reflow so the browser registers the removal before adding it back
+        void board.offsetWidth; 
+        
+        // Add the animation class
+        board.classList.add("shake-active");
+
+        // Clean up the class after the animation finishes (400ms matches our CSS)
+        setTimeout(() => {
+            board.classList.remove("shake-active");
+        }, 400);
     }
 
     renderBoard(player) {
@@ -65,6 +96,9 @@ class Render {
                     // re-render the computer board (the one we clicked)
                     this.renderBoard(this.#gameLogic.getPlayers().computer);
 
+                    //shake
+                    this.#triggerShake('computer-board');
+
                     // Handle outcome messages / game-over for human attack
                     if (result === 'miss') {
                         this.displayStatus("Miss! Computer's turn...");
@@ -92,6 +126,8 @@ class Render {
                         let compResult;
                         do {
                             compResult = this.#gameLogic.playRound();
+                            //shake
+                            this.#triggerShake('human-board');
                             this.renderBoard(this.#gameLogic.getPlayers().human);
 
                             if (compResult === 'hit') {
@@ -109,7 +145,7 @@ class Render {
 
                             // small delay between computer repeated moves
                             if (compResult === 'hit' || compResult === 'hit-sunk') {
-                                await new Promise(resolve => setTimeout(resolve, 500));
+                                await new Promise(resolve => setTimeout(resolve, 700));
                             }
                         } while (compResult === 'hit' || compResult === 'hit-sunk');
                     }
