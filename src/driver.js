@@ -10,7 +10,6 @@ class GameLogic{
         this.currentPlayer =this.currentPlayer === 'human' ? 'computer' : 'human';
     }
 
-
     #setupShips(player) {
         if (player.type === 'computer') {
             player.randomlyPlaceFleet();

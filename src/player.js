@@ -23,7 +23,6 @@ class Player {
             }
         });
     }
-
 }
 
 export { Player };
